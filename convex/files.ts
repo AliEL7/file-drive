@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { MutationCtx, QueryCtx, mutation, query } from "./_generated/server";
 import { getUser } from "./users";
+import { FileTypes } from "./schema";
 
 
 export const generateUploadUrl = mutation(async (ctx) => {
@@ -28,6 +29,7 @@ export const createFile = mutation({
     name: v.string(),
     fileId: v.id("_storage"),
     orgId: v.string(),
+    type: FileTypes,
   },
   async handler(ctx, args) {
     const identity = await ctx.auth.getUserIdentity();
@@ -51,8 +53,38 @@ export const createFile = mutation({
       name: args.name,
       orgId: args.orgId,
       fileId: args.fileId,
+      type: args.type,
     });
   },
+});
+
+export const getFileUrl =  query({
+    args: {
+        fileId: v.id("_storage")
+    },
+    async handler(ctx, args) {
+        const identity = await ctx.auth.getUserIdentity();
+
+        console.log(identity);
+    
+        if (!identity) {
+            return [];
+        }
+/*
+        const hasAccess =  await hasAccessToOrg(
+            ctx,
+            identity.tokenIdentifier,
+            args.orgId
+        );
+
+        if (!hasAccess) {
+            return [];
+        }
+
+        file exists
+*/
+        return ctx.storage.getUrl(args.fileId);
+    },
 });
 
 export const getFiles =  query({
@@ -61,6 +93,8 @@ export const getFiles =  query({
     },
     async handler(ctx, args) {
         const identity = await ctx.auth.getUserIdentity();
+
+        console.log(identity);
     
         if (!identity) {
             return [];

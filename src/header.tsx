@@ -9,7 +9,7 @@ export function Header() {
             </div>
             <div className="flex gap-2">
                 <OrganizationSwitcher />
-                <UserButton />  
+                <UserButton />
                 <SignedOut>
                     <SignInButton>
                         <Button>Sign In</Button>
